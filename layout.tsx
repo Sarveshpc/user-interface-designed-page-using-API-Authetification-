@@ -1,52 +1,54 @@
+import "@/styles/globals.css"
 import { Metadata } from "next"
 
-import { Announcement } from "@/components/announcement"
-import {
-  PageActions,
-  PageHeader,
-  PageHeaderDescription,
-  PageHeaderHeading,
-} from "@/components/page-header"
-import { Button } from "@/registry/new-york/ui/button"
+import { siteConfig } from "@/config/site"
+import { fontSans } from "@/lib/fonts"
+import { cn } from "@/lib/utils"
+import { SiteHeader } from "@/components/site-header"
+import { TailwindIndicator } from "@/components/tailwind-indicator"
+import { ThemeProvider } from "@/components/theme-provider"
 
 export const metadata: Metadata = {
-  title: "Building Blocks.",
-  description:
-    "Beautifully designed. Copy and paste into your apps. Open Source.",
+  title: {
+    default: siteConfig.name,
+    template: `%s - ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
 }
 
-export default function BlocksLayout({
-  children,
-}: {
+interface RootLayoutProps {
   children: React.ReactNode
-}) {
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <div className="container relative">
-      <PageHeader className="max-w-3xl">
-        <Announcement />
-        <PageHeaderHeading className="text-balance">
-          Building Blocks for the Web
-        </PageHeaderHeading>
-        <PageHeaderDescription>
-          Beautifully designed. Copy and paste into your apps. Open Source.
-        </PageHeaderDescription>
-        <PageActions>
-          <Button asChild>
-            <a href="#blocks">Browse</a>
-          </Button>
-          <Button asChild variant="outline">
-            <a
-              href="https://github.com/shadcn-ui/ui/discussions/new?category=blocks-request"
-              target="_blank"
-            >
-              Request a block
-            </a>
-          </Button>
-        </PageActions>
-      </PageHeader>
-      <section id="blocks" className="grid scroll-mt-24 gap-24 lg:gap-48">
-        {children}
-      </section>
-    </div>
+    <>
+      <html lang="en" suppressHydrationWarning>
+        <head />
+        <body
+          className={cn(
+            "min-h-screen bg-background font-sans antialiased",
+            fontSans.variable
+          )}
+        >
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <div className="relative flex min-h-screen flex-col">
+              <SiteHeader />
+              <div className="flex-1">{children}</div>
+            </div>
+            <TailwindIndicator />
+          </ThemeProvider>
+        </body>
+      </html>
+    </>
   )
 }

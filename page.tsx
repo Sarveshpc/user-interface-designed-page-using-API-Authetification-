@@ -1,86 +1,39 @@
+import Link from "next/link"
+
 import { siteConfig } from "@/config/site"
-import { getAllBlockIds, getBlock } from "@/lib/blocks"
-import { absoluteUrl } from "@/lib/utils"
-import { Style, styles } from "@/registry/styles"
+import { buttonVariants } from "@/components/ui/button"
 
-import "@/styles/mdx.css"
-import { Metadata } from "next"
-import { notFound } from "next/navigation"
-
-export async function generateMetadata({
-  params,
-}: {
-  params: {
-    style: Style["name"]
-    name: string
-  }
-}): Promise<Metadata> {
-  const { name, style } = params
-  const block = await getBlock(name, style)
-
-  if (!block) {
-    return {}
-  }
-
-  return {
-    title: block.name,
-    description: block.description,
-    openGraph: {
-      title: block.name,
-      description: block.description,
-      type: "article",
-      url: absoluteUrl(`/blocks/${block.name}`),
-      images: [
-        {
-          url: siteConfig.ogImage,
-          width: 1200,
-          height: 630,
-          alt: siteConfig.name,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: block.name,
-      description: block.description,
-      images: [siteConfig.ogImage],
-      creator: "@shadcn",
-    },
-  }
-}
-
-export async function generateStaticParams() {
-  const blockIds = await getAllBlockIds()
-  return styles
-    .map((style) =>
-      blockIds.map((name) => ({
-        style: style.name,
-        name,
-      }))
-    )
-    .flat()
-}
-
-export default async function BlockPage({
-  params,
-}: {
-  params: {
-    style: Style["name"]
-    name: string
-  }
-}) {
-  const { name, style } = params
-  const block = await getBlock(name, style)
-
-  if (!block) {
-    return notFound()
-  }
-
-  const Component = block.component
-
+export default function IndexPage() {
   return (
-    <div className={block.container?.className || ""}>
-      <Component />
-    </div>
+    <section className="container grid items-center gap-6 pb-8 pt-6 md:py-10">
+      <div className="flex max-w-[980px] flex-col items-start gap-2">
+        <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
+          Beautifully designed components <br className="hidden sm:inline" />
+          built with Radix UI and Tailwind CSS.
+        </h1>
+        <p className="max-w-[700px] text-lg text-muted-foreground">
+          Accessible and customizable components that you can copy and paste
+          into your apps. Free. Open Source. And Next.js 13 Ready.
+        </p>
+      </div>
+      <div className="flex gap-4">
+        <Link
+          href={siteConfig.links.docs}
+          target="_blank"
+          rel="noreferrer"
+          className={buttonVariants()}
+        >
+          Documentation
+        </Link>
+        <Link
+          target="_blank"
+          rel="noreferrer"
+          href={siteConfig.links.github}
+          className={buttonVariants({ variant: "outline" })}
+        >
+          GitHub
+        </Link>
+      </div>
+    </section>
   )
 }
